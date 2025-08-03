@@ -1,8 +1,9 @@
-import requests
-import os
 import json
-from dotenv import load_dotenv
+import os
 import time
+
+import requests
+from dotenv import load_dotenv
 
 
 class YandexDisk:
@@ -23,7 +24,10 @@ class YandexDisk:
             print(f"Директория '{path}' уже существует, продолжаю выполнение")
             return True
         else:
-            print(f"Ошибка при создании директории: {response.json().get('message', 'Неизвестная ошибка')}")
+            print(
+                f"Ошибка при создании директории: "
+                f"{response.json().get('message', 'Неизвестная ошибка')}"
+            )
             return False
 
     def upload_file_by_url(self, url, disk_path):
@@ -33,7 +37,10 @@ class YandexDisk:
         if response.status_code in (202, 201):
             return True
         else:
-            print(f"Ошибка при загрузке файла: {response.json().get('message', 'Неизвестная ошибка')}")
+            print(
+                f"Ошибка при загрузке файла: "
+                f"{response.json().get('message', 'Неизвестная ошибка')}"
+            )
             return False
 
     def get_file_metadata(self, disk_path, max_wait=30):
@@ -47,8 +54,10 @@ class YandexDisk:
             if response.status_code == 404 and (time.time() - start_time) < max_wait:
                 time.sleep(1)
                 continue
-            print(f"Ошибка при получении метаинформации: "
-                  f"{response.json().get('message', 'Неизвестная ошибка')}")
+            print(
+                f"Ошибка при получении метаинформации: "
+                f"{response.json().get('message', 'Неизвестная ошибка')}"
+            )
             return None
 
     def save_metadata_to_disk(self, file_path, metadata_path):
@@ -61,11 +70,16 @@ class YandexDisk:
         params = {"path": metadata_path, "overwrite": "true"}
         response = requests.get(upload_url, headers=self.headers, params=params)
         if response.status_code != 200:
-            print(f"Ошибка при получении ссылки для загрузки: {response.json().get('message', 'Неизвестная ошибка')}")
+            print(
+                f"Ошибка при получении ссылки для загрузки: "
+                f"{response.json().get('message', 'Неизвестная ошибка')}"
+            )
             return False
 
         upload_link = response.json().get("href")
-        upload_response = requests.put(upload_link, headers=self.headers, data=metadata.encode('utf-8'))
+        upload_response = requests.put(
+            upload_link, headers=self.headers, data=metadata.encode("utf-8")
+        )
         if upload_response.status_code in (201, 202):
             return True
         else:
